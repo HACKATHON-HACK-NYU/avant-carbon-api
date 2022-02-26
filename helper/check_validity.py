@@ -6,3 +6,4 @@ def checking_valid_email(email):
         return True
     else:
         return False
+    
