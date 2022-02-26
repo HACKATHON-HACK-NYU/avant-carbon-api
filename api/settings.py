@@ -10,20 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from email.policy import default
 from pathlib import Path
+from decouple import RepositoryEnv, Config
+import os
 
+from django import conf
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+API_PATH = os.path.join(BASE_DIR, 'api/.env.local')
+config = Config(RepositoryEnv(API_PATH))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8we9i*4hx^o!$n*v5v&z)u2fp3(@p2-yw-_6m75lxdq-*^403&'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
@@ -75,8 +82,14 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': config("DB_NAME"),
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': config('DB_HOST_URL')
+        },
+        'USER': config('DB_USERNAME'),
+        'PASSWORD': config('DB_PASS'),
     }
 }
 
