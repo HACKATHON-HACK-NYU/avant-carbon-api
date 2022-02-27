@@ -1,8 +1,7 @@
-import email
-import imp
 from django.shortcuts import render
 from django.http.request import QueryDict
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.authtoken.models import Token
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -46,11 +45,12 @@ class UserLogin(APIView):
             if UserAccount.objects.filter(email__iexact = input_data['email']).exists() == True:
                 user = is_authenticate(input_data['email'] ,input_data['password'])
                 if user:
-                    """ updating the last_login and last_ip to the useraccount table """  
 
                     serialized_var = UserAccountSerializers_1(user).data
+                    token = Token.objects.create(user=user.id)
                     context = {
                         'message':'Succesfully loggedin' ,
+                        'token': token.key,
                         'UserDetails' : serialized_var ,
                     }
                     return Response(format_response(context))
@@ -111,12 +111,12 @@ class UserSignUp(APIView):
                 if serialized_var.is_valid():
                     
                     serialized_var.save()
-                    print(serialized_var)
                     user = UserAccount.objects.filter(email = serialized_var.data['email'])[0]
+                    token = Token.objects.create(user=user.id)
                     user_serialized_var = UserAccountSerializers_1(user).data
                     context = {
                         'message':'Successfully registered .Email verification link sent to your registered email ' ,
-                        'token' : "token",
+                        'token' : token.key,
                         'UserDetails' : user_serialized_var ,
                     }
                     return Response(format_response(context , 201) , status=status.HTTP_201_CREATED)

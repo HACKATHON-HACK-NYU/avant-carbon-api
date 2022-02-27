@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'user',
+    'dashboard',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
