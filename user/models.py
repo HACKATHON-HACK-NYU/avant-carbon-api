@@ -2,6 +2,7 @@ from pyexpat import model
 from turtle import onclick
 from django.db import models
 from dashboard.models import Card
+
 # Create your models here.
 class UserAccount(models.Model):
     id = models.AutoField(primary_key=True)
